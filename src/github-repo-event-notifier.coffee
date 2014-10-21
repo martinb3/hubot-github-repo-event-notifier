@@ -66,16 +66,15 @@ module.exports = (robot) ->
   robot.router.post "/hubot/gh-repo-events", (req, res) ->
     query = querystring.parse(url.parse(req.url).query)
 
-    data = req.body
-    if data.payload
-      data = data.payload
+    content_type = req.headers["content-type"]
+    if content_type == "application/x-www-form-urlencoded"
+      data = req.param['payload']
+    else
+      data = req.body
 
     room = query.room || process.env["HUBOT_GITHUB_EVENT_NOTIFIER_ROOM"]
     eventType = req.headers["x-github-event"]
-    console.log "Processing event type #{eventType}..."
-
-    for k,v of data
-      console.log "\t#{k}=#{v}"
+    console.log "Processing event type #{eventType}, format #{content_type}..."
 
     filtered_results = []
     try

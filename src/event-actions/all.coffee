@@ -66,12 +66,13 @@ module.exports =
     buildNewIssueOrPRMessage(data, 'pull_request_review_comment', callback)
 
   push: (robot, data, callback) ->
-    if ! data.created
+    if !data.created
       msg = ""
 
       if data.commits
-        msg += "#{data.commits.length}"
-      msg += " new commit(s) pushed"
+        msg += "#{data.commits.length} new commit(s) pushed"
+      else
+        msg += "New commit(s) pushed"
 
       if data.pusher
         msg += " by #{data.pusher.name}"
@@ -82,7 +83,10 @@ module.exports =
 
       if data.compare
         msg += "\nSee them here #{data.compare}"
-        
+
+      # if all these data elements are missing, consider you may have created a
+      # github webhook that is delivering payloads of the wrong type, such as
+      # x-www-form-urlencoded instead of application/json
       callback msg
 
   commit_comment: (robot, data, callback) ->
