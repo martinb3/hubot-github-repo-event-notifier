@@ -76,14 +76,12 @@ module.exports =
       if data.pusher
         msg += " by #{data.pusher.name}"
 
-      if verboseCommit
+      if data.commits && verboseCommit
         msg += ":\n"
         msg += data.commits.map((commit)-> commit.message).join("\n")
-        msg += "\nSee "
-      else
-        msg += ", see "
 
-      msg += "them here #{data.compare}"
+      if data.compare
+      msg += "\nSee them here #{data.compare}"
       callback msg
 
   commit_comment: (robot, data, callback) ->
