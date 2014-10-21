@@ -96,7 +96,7 @@ module.exports = (robot) ->
 
       if filter_parts.length > 0 # something matched
         console.log "After filtering, #{entry} remained" for entry in filter_parts
-        filter_results.push filter_parts
+        filtered_results.push filter_parts
       else
           console.log "Ignoring #{eventType} event as it's not allowed"
     catch error
