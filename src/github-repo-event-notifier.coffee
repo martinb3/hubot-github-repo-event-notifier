@@ -68,9 +68,8 @@ module.exports = (robot) ->
 
     content_type = req.headers["content-type"]
     if content_type == "application/x-www-form-urlencoded"
-      data = req.param['payload']
-    else
-      data = req.body
+      console.log "Received a non-JSON formatted webhook, exiting..."
+      return
 
     room = query.room || process.env["HUBOT_GITHUB_EVENT_NOTIFIER_ROOM"]
     eventType = req.headers["x-github-event"]
