@@ -67,11 +67,24 @@ module.exports =
 
   push: (robot, data, callback) ->
     if ! data.created
+      msg = ""
+
+      if data.commits
+        msg += "#{data.commits.length}"
+      msg += " new commit(s) pushed"
+
+      if data.pusher
+        msg += " by #{data.pusher.name}"
+
       if verboseCommit
-        commit_messages = data.commits.map((commit)-> commit.message).join("\n")
-        callback "#{data.commits.length} new commit(s) pushed by #{data.pusher.name}:\n#{commit_messages}\nSee them here: #{data.compare}"
+        msg += ":\n"
+        msg += data.commits.map((commit)-> commit.message).join("\n")
+        msg += "\nSee "
       else
-        callback "#{data.commits.length} new commit(s) pushed by #{data.pusher.name}, see them here: #{data.compare}"
+        msg += ", see "
+
+      msg += "them here #{data.compare}"
+      callback msg
 
   commit_comment: (robot, data, callback) ->
     callback "#{data.comment.user.login} commented on a commit, see it here: #{data.comment.html_url}"
