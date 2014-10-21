@@ -45,7 +45,7 @@ if eventTypesRaw?
   # -- if any action is omitted, it will be appended with an asterisk (foo becomes foo:*) to
   # indicate that any action on event foo is acceptable
   splitRawEvents = eventTypesRaw.split(',')
-  eventTypes = ((if e.indexOf(":") > -1 then e else e+":*") for e in splitRawEvents)
+  eventTypes = ((if e.indexOf(":") > -1 then e.trim() else e.trim()+":*") for e in splitRawEvents)
   console.log "Registered event:action entry #{entry}" for entry in eventTypes
 else
   console.warn("github-repo-event-notifier is not setup to receive any events (HUBOT_GITHUB_EVENT_NOTIFIER_TYPES is empty).")
@@ -71,6 +71,7 @@ module.exports = (robot) ->
     eventType = req.headers["x-github-event"]
     console.log "Processing event type #{eventType}..."
 
+    filtered_results = []
     try
       filter_parts = eventTypes.filter (e) ->
         # should always be at least two parts, from eventTypes creation above
@@ -95,13 +96,23 @@ module.exports = (robot) ->
 
       if filter_parts.length > 0 # something matched
         console.log "After filtering, #{entry} remained" for entry in filter_parts
+        filter_results.push filter_parts
+      else
+          console.log "Ignoring #{eventType} event as it's not allowed"
+    catch error
+      robot.messageRoom room, "Whoa, I got an error filtering event types: #{error}"
+      console.log "github repo event notifier error filtering event types: #{error}. Request: #{req.body}"
+
+
+    for e in filtered_results
+      try
         announceRepoEvent robot, data, eventType, (what) ->
           robot.messageRoom room, what
-      else
-        console.log "Ignoring #{eventType} event as it's not allowed"
-    catch error
-      robot.messageRoom room, "Whoa, I got an error: #{error}"
-      console.log "github repo event notifier error: #{error}. Request: #{req.body}"
+      catch error
+        robot.messageRoom room, "Whoa, I failed to announce event type #{eventType}: #{error}"
+        console.log "github repo event notifier error announcing event types #{eventType}: #{error}. Request: #{req.body}"
+
+
 
     res.end ""
 
