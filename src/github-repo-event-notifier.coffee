@@ -71,6 +71,7 @@ module.exports = (robot) ->
       console.log "Received a non-JSON formatted webhook, exiting..."
       return
 
+    data = req.body
     room = query.room || process.env["HUBOT_GITHUB_EVENT_NOTIFIER_ROOM"]
     eventType = req.headers["x-github-event"]
     console.log "Processing event type #{eventType}, format #{content_type}..."
