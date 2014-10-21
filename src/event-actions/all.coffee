@@ -81,7 +81,8 @@ module.exports =
         msg += data.commits.map((commit)-> commit.message).join("\n")
 
       if data.compare
-      msg += "\nSee them here #{data.compare}"
+        msg += "\nSee them here #{data.compare}"
+        
       callback msg
 
   commit_comment: (robot, data, callback) ->
